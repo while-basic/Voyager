@@ -251,7 +251,7 @@ class CurriculumAgent:
                 for chest in chests:
                     content = chest.split(":")[1]
                     if content == " Unknown items inside" or content == " Empty":
-                        position = chests[0].split(":")[0]
+                        position = chest.split(":")[0]
                         task = f"Deposit useless items into the chest at {position}"
                         context = (
                             f"Your inventory have {inventoryUsed} occupied slots before depositing. "
@@ -290,6 +290,8 @@ class CurriculumAgent:
             raise ValueError(f"Invalid curriculum agent mode: {self.mode}")
 
     def propose_next_ai_task(self, *, messages, max_retries=5):
+        if max_retries == 0:
+            raise RuntimeError("Max retries reached, failed to propose ai task.")
         curriculum = self.llm(messages).content
         print(f"\033[31m****Curriculum Agent ai message****\n{curriculum}\033[0m")
         try:
